@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10182c">
+  <meta name="description" content="An interactive, classroom-friendly simulator for multiplexers and demultiplexers.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2331d7b1'/%3E%3Ctext x='20' y='28' text-anchor='middle' font-family='sans-serif' font-weight='700' font-size='26' fill='%2310182c'%3EM%3C/text%3E%3C/svg%3E">
+  <title>MUX / DEMUX Lab — Interactive Learning Simulator</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#simulator">Skip to the simulator</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="MUX / DEMUX Lab home">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <span>MUX / DEMUX <span class="brand-light">LAB</span></span>
+      </a>
+      <span class="course-tag">DIGITAL ELECTRONICS · LEARNING STUDIO</span>
+    </div>
+  </header>
+
+  <main id="top" class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot"></span> Interactive circuit explorer</p>
+        <h1 id="page-title">Signals made <span>simple.</span></h1>
+        <p class="hero-description">Choose a circuit, flip the switches, and follow each signal. Learn one selection at a time.</p>
+      </div>
+      <div class="hero-formula" aria-label="Number of channels equals two to the power n">
+        <span class="formula-label">A quick rule</span>
+        <span class="formula-main">Channels = 2<sup>n</sup></span>
+        <span class="formula-note">n = number of select lines</span>
+      </div>
+    </section>
+
+    <section id="simulator" class="simulator-card" aria-labelledby="simulator-title">
+      <div class="section-topline">
+        <div>
+          <p class="eyebrow">THE SIMULATOR</p>
+          <h2 id="simulator-title">Build a signal path</h2>
+        </div>
+        <div class="circuit-picker">
+          <label class="field-label" for="circuitType">Circuit</label>
+          <select id="circuitType" class="select-control">
+            <option value="mux">Multiplexer · MUX</option>
+            <option value="demux">Demultiplexer · DEMUX</option>
+          </select>
+          <label class="field-label" for="ratioSelect">Channels</label>
+          <select id="ratioSelect" class="select-control"></select>
+        </div>
+      </div>
+
+      <div class="circuit-summary" id="circuitSummary" aria-live="polite"></div>
+
+      <div class="lab-grid">
+        <aside class="controls-panel" aria-label="Circuit inputs and select lines">
+            <div id="muxDataGroup" class="control-group">
+            <div class="control-heading">
+              <div><p class="eyebrow">01 · DATA</p><h3 id="dataHeading">Input switches</h3></div>
+              <span class="small-count" id="dataCount"></span>
+            </div>
+            <div id="dataControls" class="switch-list"></div>
+          </div>
+          <div class="control-group select-group">
+            <div class="control-heading">
+              <div><p class="eyebrow">02 · ADDRESS</p><h3>Select lines</h3></div>
+              <span class="small-count" id="selectCount"></span>
+            </div>
+            <p class="control-hint">S0 is the least significant bit (rightmost).</p>
+            <div id="selectControls" class="select-switches"></div>
+            <div class="binary-readout" aria-live="polite">
+              <span id="binaryValue" class="binary-value">00</span>
+              <span class="binary-equals">=</span>
+              <span id="decimalValue" class="decimal-value">0<small>₁₀</small></span>
+            </div>
+          </div>
+          <div id="demuxInput" class="control-group demux-input" hidden>
+            <div class="control-heading">
+              <div><p class="eyebrow">01 · DATA</p><h3>Data input</h3></div>
+            </div>
+            <div id="demuxDataControl"></div>
+          </div>
+        </aside>
+
+        <div class="visual-panel">
+          <div class="panel-caption">
+            <div><p class="eyebrow">LIVE CIRCUIT</p><h3 id="diagramTitle">2 : 1 Multiplexer</h3></div>
+            <span id="activeBadge" class="active-badge"><span class="live-dot"></span> ACTIVE PATH</span>
+          </div>
+          <div id="diagramWrap" class="diagram-wrap" role="img" aria-label="Live digital circuit diagram">
+            <svg id="circuitDiagram" class="circuit-diagram" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+          </div>
+          <div class="result-strip" aria-live="polite">
+            <div class="result-icon" aria-hidden="true">Y</div>
+            <div class="result-copy"><span class="result-label" id="resultLabel">OUTPUT</span><strong id="resultText">Y = 0</strong></div>
+            <div class="result-divider"></div>
+            <div class="channel-result"><span class="result-label">SELECTED CHANNEL</span><strong id="channelText">I0</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explain-card" aria-live="polite">
+        <div class="explain-icon" aria-hidden="true">i</div>
+        <div class="explain-content">
+          <p class="eyebrow">WHAT IS HAPPENING?</p>
+          <p id="liveExplanation"></p>
+          <p id="booleanExpression" class="boolean-expression"></p>
+        </div>
+      </div>
+
+      <div class="activity-grid">
+        <section class="activity-card step-card" aria-labelledby="step-title">
+          <div class="activity-heading"><span class="activity-icon">01</span><div><p class="eyebrow">LEARN AT YOUR PACE</p><h3 id="step-title">Step mode</h3></div></div>
+          <p class="activity-description">Walk through how the select lines choose a channel.</p>
+          <div id="stepExplanation" class="step-explanation" aria-live="polite">Press Next to start the walkthrough.</div>
+          <div class="button-row">
+            <button id="previousStep" class="button button-secondary" type="button">← Previous</button>
+            <button id="nextStep" class="button button-primary" type="button">Next →</button>
+            <button id="restartSteps" class="button button-quiet" type="button">Restart</button>
+          </div>
+          <div class="step-progress" id="stepProgress" aria-label="Step 0 of 4"><span></span><span></span><span></span><span></span></div>
+        </section>
+
+        <section class="activity-card demo-card" aria-labelledby="demo-title">
+          <div class="activity-heading"><span class="activity-icon demo-icon" aria-hidden="true">↻</span><div><p class="eyebrow">WATCH IT MOVE</p><h3 id="demo-title">Auto demo</h3></div></div>
+          <p class="activity-description">Cycle through every address and watch the active path move.</p>
+          <div class="demo-status"><span id="demoIndicator" class="status-dot"></span><span id="demoStatus">Demo is paused</span></div>
+          <button id="toggleDemo" class="button button-primary demo-button" type="button" aria-pressed="false">▶ Start auto demo</button>
+          <p class="tiny-note">The demo stops when you switch circuits.</p>
+        </section>
+      </div>
+
+      <section class="truth-section" aria-labelledby="truth-title">
+        <div class="truth-heading"><div><p class="eyebrow">CHECK EVERY ADDRESS</p><h3 id="truth-title">Truth table</h3></div><p id="truthHint" class="truth-hint">The highlighted row is the address selected right now.</p></div>
+        <div id="truthTableWrap" class="table-scroll" tabindex="0" aria-label="Truth table; scroll horizontally on small screens"></div>
+      </section>
+    </section>
+
+    <section class="quiz-section" aria-labelledby="quiz-title">
+      <div class="quiz-intro">
+        <p class="eyebrow">YOUR TURN</p>
+        <h2 id="quiz-title">Practice quiz</h2>
+        <p>Try a quick question. Think about the address first, then follow the selected signal.</p>
+        <div class="score-pill">SCORE <strong id="quizScore">0</strong></div>
+      </div>
+      <div class="quiz-card">
+        <div class="quiz-meta"><span id="quizKind" class="quiz-kind">READY</span><span id="quizNumber">QUESTION 1</span></div>
+        <p id="quizQuestion" class="quiz-question">Press “New question” when you are ready.</p>
+        <div id="quizAnswers" class="quiz-answers"></div>
+        <div class="quiz-footer"><p id="quizFeedback" class="quiz-feedback" aria-live="polite">There is no time limit. Learning is the goal.</p><button id="newQuestion" class="button button-secondary" type="button">New question ↗</button></div>
+      </div>
+    </section>
+
+    <section class="learn-section" aria-labelledby="learn-title">
+      <div class="learn-title"><p class="eyebrow">THE BIG IDEA</p><h2 id="learn-title">Two circuits. Two directions.</h2></div>
+      <div class="learn-grid">
+        <article class="learn-card mux-learn"><div class="learn-symbol">n → 1</div><h3>Multiplexer · MUX</h3><p>A MUX is a <strong>many-to-one</strong> selector. It reads the select bits, then connects one chosen data input to its single output.</p><div class="learn-example">Think: many roads merge into one.</div></article>
+        <article class="learn-card demux-learn"><div class="learn-symbol">1 → n</div><h3>Demultiplexer · DEMUX</h3><p>A DEMUX is a <strong>one-to-many</strong> distributor. It reads the select bits, then sends its one data input to one chosen output.</p><div class="learn-example">Think: one road splits toward a chosen exit.</div></article>
+        <article class="learn-card applications-card"><div class="learn-symbol">✳</div><h3>Where are they used?</h3><p><strong>MUX:</strong> data selection, communication channels, sensor reading, and CPU buses.</p><p><strong>DEMUX:</strong> data routing, serial-to-parallel systems, memory decoding, and control signals.</p></article>
+        <article class="learn-card compare-card"><div class="learn-symbol">↔</div><h3>MUX vs DEMUX</h3><p>Both use binary select lines. A MUX chooses <strong>which input to read</strong>. A DEMUX chooses <strong>where to send the input</strong>.</p><div class="compare-rule">Same address rule: <strong>channels = 2<sup>n</sup></strong></div></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><span>MUX / DEMUX LAB</span><span>Made for curious engineers · Flip a switch and follow the signal</span></footer>
+</body>
+</html>
